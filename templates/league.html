@@ -1,0 +1,45 @@
+
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>{{ league.name }}</h1>
+<h2>{{ league.year }}</h2>
+
+<div class="row">
+ 
+<div class="col-md-4">
+<h3>Weeks</h3>
+<a href="/leagues/{{ league.id }}/games/add">
+ <button type="button" style="background-color: #7332a8" class="btn btn-primary">Add Game</button>
+</a>
+<div class='list-group'>
+ {% for i in weeks %}
+   <a href="#week{{ i }}" data-bs-toggle="collapse" class='list-group-item list-group-item-dark'>Week {{ i }}</a>
+   <div class="collapse" id="week{{ i }}">
+   {% include 'gamelist.html' with week=i %}
+   </div>
+ {% endfor %}
+</div>
+
+</div>
+ 
+
+ 
+<div class="col-md-8 overflow-scroll">
+ 
+ <h3>Teams</h3>
+
+<a href="/leagues/{{ league.id }}/teams/add">
+ <button type="button" style="background-color: #7332a8" class="btn btn-primary">Add Team</button>
+</a>
+
+
+{% include 'playerstats.html' with stats=team_stats %}
+
+
+</div>
+
+</div>
+{% endblock %}

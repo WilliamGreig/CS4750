@@ -1,0 +1,54 @@
+
+  <table class="table table-striped playerstats">
+   <thead>
+   <tr>
+    <th></th>
+    <td>Hits</td>
+    <td>Misses</td>
+    <td>Hit %</td>
+    <td>Points</td>
+    <td>Plinks</td>
+    <td>Plunks</td>
+    <td>Catches</td>
+    <td>Kicks</td>
+    <td>Negatives</td>
+    <td>Self Plunks</td>
+   </tr>
+   </thead>
+   <tbody>
+   {% for s in stats %}
+   <tr>
+    <th>
+        {% if s.players %}<a href="#team{{ s.player|cut:' ' }}" data-bs-toggle="collapse">{% endif %}
+
+     {{ s.player }}
+    
+   {% if s.players %}</a>{% endif %}
+   </th>
+    <td>{{ s.hits }}</td>
+    <td>{{ s.misses }}</td>
+    <td>{{ s.hit_percentage }}</td>
+    <td>{{ s.points }}</td>
+    <td>{{ s.plinks }}</td>
+    <td>{{ s.plunks }}</td>
+    <td>{{ s.catches }}</td>
+    <td>{{ s.kicks }}</td>
+    <td>{{ s.negative_points }}</td>
+    <td>{{ s.self_plunks }}</td>
+   </tr>
+   {% if s.players %}
+   
+   
+    <tr></tr>
+    <tr class="collapse" id="team{{ s.player|cut:' ' }}">
+     
+     <td colspan=11>
+      <div class="subtable">
+      {% include 'playerstats.html' with stats=s.players %}
+      </div>
+     </td>
+    </tr>
+   {% endif %}
+   {% endfor %}
+   </tbody>
+  </table>

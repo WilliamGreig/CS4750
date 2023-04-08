@@ -1,0 +1,115 @@
+
+
+{% extends 'base.html' %}
+
+
+
+{% block content %}
+
+
+
+
+<div class="row">   
+
+<div class='col-sm-3'></div>  
+<div class='col-sm-6'>
+ <h1>{{ header }}</h1>
+ 
+{% include 'scoreboard.html' %}
+
+</div>
+<div class='col-sm-3'></div>  
+</div>
+
+<form action="" method="post">
+  {% csrf_token %}
+  
+  <div class="row">
+    <div class="col-sm-8">
+      <div class="row">
+        <div class="col-sm-4">
+          <div class="form-group">
+          {{ form.player.label_tag }} {{ form.player }} 
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div class="form-check form-switch">
+          {{ form.hit.label_tag }} {{ form.hit }} 
+          </div>
+          <div class="form-check form-switch">
+          {{ form.miss.label_tag }} {{ form.miss }} 
+          </div>
+          
+        </div>
+        <div class="col-sm-4">
+          
+          <div class="form-group">
+              {{ form.caught_by.label_tag }} {{ form.caught_by }} 
+          </div>
+          
+          <div class="form-outline">
+              {{ form.plink }}
+          </div>
+          
+          <div class="form-check form-switch">
+              {{ form.dropped.label_tag }} {{ form.dropped }} 
+          </div>
+          
+          <div class="form-check form-switch">
+              {{ form.plunk.label_tag }} {{ form.plunk }} 
+          </div>
+          
+          <div class="form-group">
+              {{ form.kicked_by.label_tag }} {{ form.kicked_by }} 
+          </div>
+          <div class="form-check form-switch">
+          {{ form.negative_points.label_tag }} {{ form.negative_points }} 
+          </div>
+          <div class="form-check form-switch">
+          {{ form.self_plunk.label_tag }} {{ form.self_plunk }} 
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+          <div class="form-outline">
+              {{ form.note }}
+          </div>
+          <input type="submit" value="Record Toss" class="btn btn-primary">
+          <a href="/games/{{game.id}}">
+           <button type="button" class="btn btn-primary">Back to Game Summary</button>
+          </a>
+        </div>
+        <div class="col-md-4"></div>
+      </div>
+    </div>
+    <div class="col-md-4">
+        <div class="row">
+          <div class="col-sm">
+          <h2 class='delete-toss'>Game Log</h2>
+          </div>
+          
+          <div class="col-sm">
+          <a href="/games/{{game.id}}/stats/delete" class="delete-toss">
+           <button type="button" class="btn btn-primary">Delete recent toss</button>
+          </a>
+          </div>
+        </div>
+        {% include 'gamelog.html' %}
+    </div>
+  </div>
+  
+ 
+</form>
+
+
+
+<script>
+    var teams={{ players }};
+</script>
+
+{% load static %}
+<script src="{% static 'die/stats.js' %}" ></script>
+
+{% endblock %}

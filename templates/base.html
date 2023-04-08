@@ -1,0 +1,90 @@
+{% load static %}
+<!DOCTYPE html>
+<style>
+
+/*https://www.30secondsofcode.org/css/s/hover-underline-animation */
+
+  .hover-underline-animation {
+  display: inline-block;
+  position: relative;
+  color: #FFFFFF;
+}
+
+.hover-underline-animation::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: #FFFFFF;
+  transform-origin: bottom right;
+  transition: transform 0.25s ease-out;
+}
+
+.hover-underline-animation:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+</style>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  
+  <title>{% block title %}Sigma Pi Die League{% endblock %}</title>
+  <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+  
+  {% load static %}
+  <link href="{% static 'die/style.css' %}" rel="stylesheet" />
+
+
+
+</head>
+<body>
+  
+  
+  <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #7332a8">
+    <a class="navbar-brand" href="/" style="font-size:26px">
+      <img src="https://upload.wikimedia.org/wikipedia/en/3/3c/Sigma_Pi_fraternity_Crest.png" alt="" width="60" height="60" class="d-inline-block">
+    Sigma Pi Die League
+    </a>
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarLinks">
+    <span class="navbar-toggler-icon"></span>
+    </button>
+  
+    <div class="collapse navbar-collapse" id="navbarLinks">
+      <ul class="navbar-nav mr-auto"  style="font-size: 24px">
+        <li class="nav-item hover-underline-animation">
+          <a class="nav-link" href="/leagues">Leagues</a>
+        </li>
+        <li class="nav-item hover-underline-animation">
+          <a class="nav-link" href="/games">Games</a>
+        </li>
+        <li class="nav-item hover-underline-animation">
+          <a class="nav-link" href="/players">Players</a>
+        </li>
+      </ul>
+    </div>
+    
+    
+  </nav>
+  
+  
+  <main>
+    <div class="container">
+    {% block content %}
+    {% endblock %}
+    </div>
+  </main>
+</body>
+
+
+</html>

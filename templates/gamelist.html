@@ -1,0 +1,26 @@
+<ul class='list-group'>
+   {% for game in games %}
+     {% if week == -1 or game.week == week %}
+     <a href="/games/{{ game.id }}">
+     <li class="list-group-item d-flex justify-content-between align-items-start">
+     {{ game }}
+     
+     {% if game.in_the_past and game.locked %}
+       <span class="badge bg-success rounded-pill">{{ game.big_score.0 }} - {{ game.big_score.1 }}</span>
+     {% elif game.in_the_past or game.big_score.0 != 0 or game.big_score.1 != 0 %}
+       <span class="badge bg-warning rounded-pill">{{ game.big_score.0 }} - {{ game.big_score.1 }}</span>
+     {% elif game.today %}
+       <span class="badge bg-primary rounded-pill">Today {{ game.datetime|date:'g:i' }}</span>
+     {% elif game.datetime != None %}
+       <span class="badge bg-primary rounded-pill">{{ game.datetime|date:'M j g:i' }}</span>
+     {% else %}
+       <span class="badge bg-secondary rounded-pill">TBD</span>
+     {% endif %}
+     
+       
+     </li>
+     </a>
+     {% endif %}
+     
+   {% endfor %}
+</ul>

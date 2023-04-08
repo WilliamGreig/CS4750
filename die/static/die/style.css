@@ -1,0 +1,103 @@
+
+body {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 1000px) {
+    .gamestats th {
+        font-size: 10pt;
+    }
+    .gamestats th {
+        font-size: 10pt;
+    }
+}
+
+.btn-primary {
+  background-color: #7332a8;
+}
+
+.form-switch .form-check-input {
+   width: 4em;
+   height: 2em;
+   margin: .1em;
+}
+
+.form-switch {
+    padding: .5em;
+    margin-bottom: .2em;
+}
+
+.form-outline {
+    margin-bottom: .2em;
+    padding: .5em;
+}
+
+.form-group {
+    margin-bottom: .2em;
+    padding: .5em;
+}
+
+td {
+    text-align: center;
+}
+
+thead th {
+    width: 50%;
+}
+
+
+th {
+    text-align: center;
+    font-weight: bold;
+}
+
+.gamestats thead th {
+    width: 20%;
+}
+
+
+
+h1 {
+    text-align: center;
+}
+
+h2 {
+    text-align: center;
+}
+h3 {
+    text-align: center;
+}
+
+.win {
+    color: green;
+    font-weight: bold;
+}
+
+.lose {
+    color: red;
+}
+
+.game-log {
+    height: 20em;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+}
+
+
+.playerstats th {
+    position: sticky;
+    position: -webkit-sticky;
+    left: -5%;
+    z-index: 1; 
+    background-color: rgba(255,255,255,1);
+    min-width: 10em;
+}
+
+
+.playerstats tbody>tr:nth-of-type(odd) .playerstats th {
+    
+    background-color: rgba(243,243,243,1);
+}

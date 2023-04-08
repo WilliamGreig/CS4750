@@ -1,0 +1,46 @@
+<ul class='overflow-auto game-log'>
+        {% load tz %}
+        
+        {% for t in last_plays %}
+        
+        <li>{% localtime on %}{{ t.datetime }}{% endlocaltime %} - {{ t.player }} threw and 
+            {% if t.plunk == 1 %}
+                plunked!
+            {% elif t.self_plunk == 1 %}
+                self plunked lmao!
+            {% else %}
+                {% if t.hit == 1 %}
+                    hit
+                {% else %}
+                    missed
+                {% endif %} the table.
+            {% endif %}
+            {% if t.hit == 1 and t.plunk == 0 %}
+                {% if t.plink > 0 %} The die plinked 
+                    {% if t.plink == 1 %}
+                        once
+                    {% else %}
+                        {{t.plink}} times
+                    {% endif %} and the 
+                {% else %}
+                    The 
+                {% endif %}
+                
+                {% if t.dropped == 0 and t.caught_by != None %}
+                    die was caught by {{ t.caught_by_player }}
+                {% elif t.dropped == 0 %}
+                    die stayed on the table 
+                {% else %}
+                    die was dropped
+                {% endif %}
+                for a gain of {{ t.dropped | add:t.plink }} points.
+            {% endif %}
+            {% if t.kicked_by %}
+                The die was kicked by {{ t.kicked_by_player }} for a loss of 1 point.
+            {% endif %}
+            {% if t.negative_points %}
+                The die fell behind the line for a loss of 1 point.
+            {% endif %}
+        </li>
+        {% endfor %}
+        </ul>

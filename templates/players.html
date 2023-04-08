@@ -1,0 +1,19 @@
+
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Players</h1>
+
+<a href="/players/add">
+ <button type="button" style="background-color: #7332a8" class="btn btn-primary">Add Player</button>
+</a>
+
+<ul>
+ {% for player in players %}
+  <li>{{ player }}</li>
+ {% endfor %}
+</ul>
+
+{% endblock %}

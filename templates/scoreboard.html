@@ -1,0 +1,18 @@
+
+<h2 class='score'>{{ game.big_score.0 }} - {{ game.big_score.1 }}</h2>
+<table class="table table-striped scoreboard">
+ <thead>
+     <tr>
+      <th>{{ team_1 }}</th>
+      <th>{{ team_2 }}</th>
+     </tr>
+ </thead>
+ <tbody>
+     {% for s in scores %}
+     <tr>
+      <td class="{% if s.0 == "Plunk" or s.1 == "Self Plunk" or s.0 >= 7 and s.0 > s.1|add:1 %}win{% elif s.1 == "Plunk" or s.0 == "Self Plunk" or s.1 >= 7 and s.1 > s.0|add:1 %}lose{% endif %}">{{ s.0 }}</td>
+      <td class="{% if s.1 == "Plunk" or s.0 == "Self Plunk" or s.1 >= 7 and s.1 > s.0|add:1 %}win{% elif s.0 == "Plunk" or s.1 == "Self Plunk" or s.0 >= 7 and s.0 > s.1|add:1 %}lose{% endif %}">{{ s.1 }}</td>
+     </tr>
+     {% endfor %}
+ </tbody>
+</table>

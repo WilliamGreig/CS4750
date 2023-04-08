@@ -1,0 +1,109 @@
+
+  <table class="table table-striped gamestats">
+   <thead>
+   <tr>
+     {% for s in stats1 %}
+     <th>{{ s.player }}</th>
+     {% endfor %}
+     <td></td>
+     {% for s in stats2 %}
+     <th>{{ s.player }}</th>
+     {% endfor %}
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     {% for s in stats1 %}
+     <td>{{ s.hits }}</td>
+     {% endfor %}
+     <th>Hits</th>
+     {% for s in stats2 %}
+     <td>{{ s.hits }}</td>
+     {% endfor %}
+    </tr>
+    <tr>
+     {% for s in stats1 %}
+     <td>{{ s.misses }}</td>
+     {% endfor %}
+     <th>Misses</th>
+     {% for s in stats2 %}
+     <td>{{ s.misses }}</td>
+     {% endfor %}
+    </tr>
+    <tr>
+     {% for s in stats1 %}
+     <td>{{ s.hit_percentage }}</td>
+     {% endfor %}
+     <th>Hit %</th>
+     {% for s in stats2 %}
+     <td>{{ s.hit_percentage }}</td>
+     {% endfor %}
+    </tr>
+    <tr>
+     {% for s in stats1 %}
+     <td>{{ s.points }}</td>
+     {% endfor %}
+     <th>Points</th>
+     {% for s in stats2 %}
+     <td>{{ s.points }}</td>
+     {% endfor %}
+    </tr>
+    <tr>
+     {% for s in stats1 %}
+     <td>{{ s.plinks }}</td>
+     {% endfor %}
+     <th>Plinks</th>
+     {% for s in stats2 %}
+     <td>{{ s.plinks }}</td>
+     {% endfor %}
+    </tr>
+    <tr>
+     {% for s in stats1 %}
+     <td>{{ s.plunks }}</td>
+     {% endfor %}
+     <th>Plunks</th>
+     {% for s in stats2 %}
+     <td>{{ s.plunks }}</td>
+     {% endfor %}
+    </tr>
+    
+    <tr>
+     {% for s in stats1 %}
+     <td>{{ s.catches }}</td>
+     {% endfor %}
+     <th>Catches</th>
+     {% for s in stats2 %}
+     <td>{{ s.catches }}</td>
+     {% endfor %}
+    </tr>
+    <tr>
+     {% for s in stats1 %}
+     <td>{{ s.kicks }}</td>
+     {% endfor %}
+     <th>Kicks</th>
+     {% for s in stats2 %}
+     <td>{{ s.kicks }}</td>
+     {% endfor %}
+    </tr>
+    
+    <tr>
+     {% for s in stats1 %}
+     <td>{{ s.negative_points }}</td>
+     {% endfor %}
+     <th>Negatives</th>
+     {% for s in stats2 %}
+     <td>{{ s.negative_points }}</td>
+     {% endfor %}
+    </tr>
+    <tr>
+     {% for s in stats1 %}
+     <td>{{ s.self_plunks }}</td>
+     {% endfor %}
+     <th>Self Plunks</th>
+     {% for s in stats2 %}
+     <td>{{ s.self_plunks }}</td>
+     {% endfor %}
+    </tr>
+    
+   </tbody>
+  </table>

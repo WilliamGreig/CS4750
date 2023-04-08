@@ -1,0 +1,72 @@
+
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>{{ game }}</h1>
+<h2>{{ league }}</h2>
+<h2>Week {{ game.week }} - {% if game.datetime != None %}{{ game.datetime }}{% else %}Not Scheduled{% endif %}</h2>
+
+
+
+{% include 'scoreboard.html' %}
+
+<div class='row'>
+
+<div class='col-lg'>
+{% include 'gamestats.html' with stats1=stats|slice:"0:2" stats2=stats|slice:"2:4" %}
+</div>
+
+
+</div>
+
+
+<h2>Play By Play</h2>
+
+{% include 'gamelog.html' %}
+
+{% if game.locked == 0 %}
+<a href="/games/{{game.id}}/stats/record">
+ <button type="button" style="background-color: #7332a8" class="btn btn-primary">Record Stats</button>
+</a>
+
+
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateModal">
+  Update Game
+</button>
+
+<div class="modal" tabindex="-1" role="dialog" id="updateModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Update Game</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      
+        <form action="update" method="post">
+          <div class="modal-body">
+          {% csrf_token %}
+          {{ form.as_p }}
+          </div>
+          <div class="modal-footer">
+            <input type="submit" class="btn btn-primary" value="Save">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </form>
+      
+          
+    </div>
+  </div>
+</div>
+
+
+
+{% endif %}
+
+{% load static %}
+<script src="{% static 'die/game.js' %}" ></script>
+
+{% endblock %}
