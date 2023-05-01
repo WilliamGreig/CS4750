@@ -41,5 +41,9 @@ urlpatterns = [
     #path('leagues/<int:id>/delete', views.league_delete),
     path('leagues/<int:id>/teams/add', views.team_add),
     path('leagues/<int:id>/games/add', views.league_game_add),
-    
+    path('login/', views.login),
+    path('logout/', views.logout),
+    path('create/', views.createAdmin),
+    path('profile/', views.profile),
+    path('privileges/', views.privileges)
 ]

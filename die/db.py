@@ -2,6 +2,9 @@ import pymysql
 import die.settings
 import die.models
 
+# sql prevention
+
+
 def connect():
     db = pymysql.connect(host=die.settings.MYSQL_DATABASE_HOST, user=die.settings.MYSQL_DATABASE_USER,
             password=die.settings.MYSQL_DATABASE_PASSWORD, database=die.settings.MYSQL_DATABASE_NAME)
@@ -23,18 +26,56 @@ def get_players():
         print(e)
         
     db.close()
+    
+def authenticate_user(username, hash):
+    db = connect()
+    cursor = db.cursor()
+    sql = "SELECT * FROM Admin WHERE username = '" + str(username) + "' AND hash = '" + str(hash) + "';"
+
+    try:
+        cursor.execute(sql)
+        result = cursor.fetchone()
+        
+        if result != None:
+            return True
+
+    except Exception as e:
+        print(sql, e)
+
+    return False
+   
+def get_user_priv(username):
+    db = connect()
+    cursor = db.cursor()
+    sql = "SELECT * FROM Admin;"
+    cursor.execute(sql)
+    result = cursor.fetchone()
+    print(result)
+    
+    sql = "SELECT * FROM Admin WHERE username = '" + str(username) + "';"
+
+    try:
+        cursor.execute(sql)
+        result = cursor.fetchone()
+        
+        return result[2]
+        
+    except Exception as e:
+        print(sql, e)
+    
+    return -1
 
 def create_SQL(sql, f):
-        if len(f) > 0:
-            sql += "WHERE "
+    if len(f) > 0:
+        sql += "WHERE "
         
-        for i in f.keys():
-            sql += i + " = '" + str(f[i]) + "' AND "
+    for i in f.keys():
+        sql += i + " = '" + str(f[i]) + "' AND "
 
-        # remove last AND
-        if len(f) > 0:
-            sql = sql[:-4]
-        return sql
+    # remove last AND
+    if len(f) > 0:
+        sql = sql[:-4]
+    return sql
     
 def get_options(m):
     out = []
@@ -136,10 +177,72 @@ class Model(object):
            
         db.close()
         
+    # UPDATE FOR ADMIN TABLE for passwords -- needs slightly different implementation
+    def updateA(self):
+        db = connect()
+        cursor = db.cursor()
+
+        sql = "UPDATE " + str(type(self).__name__)[1:] + " SET hash=MD5('" + str(self.hash) + "') WHERE username='" + str(self.username) + "'"
+        print(sql)
+        
+        try:
+            print(sql)
+            cursor.execute(sql)
+            db.commit()
+        except Exception as e:
+            print(sql, e)
+            db.rollback()
+
+        db.close()
+        
+    # UPDATE FOR ADMIN TABLE privilege
+    def updateAPriv(self):
+        db = connect()
+        cursor = db.cursor()
+
+        sql = "UPDATE " + str(type(self).__name__)[1:] + " SET privilege='" + str(self.privilege) + "' WHERE username='" + str(self.username) + "'"
+        
+        try:
+            print(sql)
+            cursor.execute(sql)
+            db.commit()
+        except Exception as e:
+            print(sql, e)
+            db.rollback()
+
+        db.close()
+        
+    # select all for admin table -- needs diff. impl cuz no id
+    def allAdmin():
+        db = connect()
+        cursor = db.cursor()
+        
+        
+        sql = "SELECT * FROM Admin"
+
+
+        try:
+            cursor.execute(sql)
+            results = cursor.fetchall()
+            return results
+            
+        except Exception as e:
+            print(sql, e)
+        
+        db.close()
+        
     
     def save(self):
         db = connect()
         cursor = db.cursor()
+
+        sql = "SELECT username FROM Admin"
+        admin_list = []
+        cursor.execute(sql)
+        results = cursor.fetchall()
+        for i in results:
+            admin_list.append(i[0])
+        
         
         if self.id == -1:
             sql = "INSERT INTO " + str(type(self).__name__)[1:] + "("
@@ -185,7 +288,7 @@ class Model(object):
         
            
         db.close()
-        
+
         
     
     @classmethod
@@ -198,6 +301,7 @@ class Model(object):
         
         db = connect()
         cursor = db.cursor()
+        
         
         sql = "SELECT * FROM " + str(cls.__name__)[1:] + " "
         sql = create_SQL(sql, f)

@@ -6,6 +6,8 @@ from die.forms import *
 from die.models import *
 from die.db import *
 from datetime import datetime
+import hashlib
+
 
 def index(request):
     
@@ -18,7 +20,49 @@ def game_list(request):
     # sorting reference: https://stackoverflow.com/questions/18411560/sort-list-while-pushing-none-values-to-the-end
     games = sorted(games, key=lambda x: (x.datetime is None, x.datetime), reverse=False)
     
-    return render(request, 'games.html', {'games': games})
+
+    players = get_options(NPlayer.all())
+    teams = get_options(NLeagueTeam.all())
+    
+    player_list = []
+    team_list = []
+    num_filters = 0
+    if request.method == "POST":
+        form = GameFilter(request.POST, players=players, teams=teams)
+        if form.is_valid():
+            games = []
+            player_list = form.cleaned_data["players"]
+            for p in player_list:
+                gid = PlayedIn().get_by_b(p)
+                for g in gid:
+                    games.append(g)
+            
+            team_list = form.cleaned_data["teams"]
+            for t in team_list:
+                gid = TeamPlayedIn().get_by_b(t)
+                for g in gid:
+                    games.append(g)
+            
+            games = sorted(games, key=lambda x: (x.datetime is None, x.datetime), reverse=False)
+    
+            num_filters = max(len(player_list), len(team_list))
+        
+            # get player names
+            t_list = []
+            for i in player_list:
+                player = NPlayer.get({'id': i})
+                t_list.append(player.first_name + " " + player.last_name)
+            player_list = t_list
+            
+            t_list = []
+            for i in team_list:
+                team = NLeagueTeam.get({'id': i})
+                t_list.append(team.name)
+            team_list = t_list
+    
+    
+    form = GameFilter(players=players, teams=teams)
+    return render(request, 'games.html', {'games': games, 'form': form, 'team_filters': team_list, 'player_filters': player_list, 'num_filters': num_filters})
     
 def game_detail_big(request, id, big):
     game = NGame.get({'id': id})
@@ -31,11 +75,10 @@ def game_detail_big(request, id, big):
     team_2_players = PlaysFor.get_by_b(teams[1].id)
     
     last_plays = sorted(NToss.filter({"game_id": id}), key=lambda x: (x.datetime is None, x.datetime), reverse=False)
-     
+    
       
 
     stats = []
-    
     players = team_1_players + team_2_players
     
     print("teams", teams, players)
@@ -76,6 +119,10 @@ def game_detail(request, id):
     return game_detail_big(request, id, -1)
     
 def game_delete(request, id):
+    
+    if not request.session.has_key('username') or get_user_priv(request.session['username']) < 1:
+        return redirect('/games/')
+    
     game = NGame.get({"id": id})
     game.delete()
     
@@ -135,12 +182,71 @@ def game_refresh(request, id):
     
     return JsonResponse(data, safe=False)
     
+
+def createAdmin(request):
+    exists = False
+    if request.method == "POST":
+        form = AdminForm(request.POST)
+        if form.is_valid():
+            admin = NAdmin()
+            username = form.cleaned_data['username']
+            # if username already exists in table -- don't create
+            admin_match = NAdmin().filter({'username': username})
+            print(admin_match == None)
+            print(admin_match is None)
+            if admin_match == None:
+                # admin already exists
+                exists = True
+                pass
+            else:
+                admin.username = form.cleaned_data['username']
+                # hash_pass = hashlib.md5(str(form.cleaned_data['password']).encode("utf-8"))
+                
+                setattr(admin, "hash", form.cleaned_data['password'])
+                admin.privilege = -1
+
+                admin.save()
+            
+        return render(request, "createAdmin.html", {'form': form, 'exists': exists})
+    
+    form = AdminForm()
+    
+    return render(request, 'createAdmin.html', {'form': form})
+
+def login(request):
+    login_fail = False
+    if request.method == "POST":
+        form = AdminForm(request.POST)
+        if form.is_valid():
+            
+            
+            auth = authenticate_user(form.cleaned_data['username'], hashlib.md5(str(form.cleaned_data['password']).encode("utf-8")).hexdigest())
+            
+            if auth:
+                request.session['username'] = form.cleaned_data['username']
+                return redirect('/')
+            else:
+                login_fail = True
+            
+        return render(request, "login.html", {'form': form, 'login_fail': login_fail})
+    
+    form = AdminForm()
+    
+    return render(request, 'login.html', {'form': form})
+
+def logout(request):
+    
+    del request.session['username']
+    return redirect('/')
     
 def player_list(request):
     players = NPlayer.all()
     return render(request, 'players.html', {'players': players})
     
 def player_add(request):
+    
+    if not request.session.has_key('username') or get_user_priv(request.session['username']) < 1:
+        return redirect('/players')
     
     if request.method == 'POST':
         form = PlayerForm(request.POST)
@@ -160,6 +266,10 @@ def player_add(request):
     
     
 def stat_record(request, id):
+    
+    if not request.session.has_key('username') or get_user_priv(request.session['username']) < 0:
+        return redirect('/games/' + str(id))
+    
     game = NGame.get({'id': id})
     if game.locked:
         return redirect('/games/' + str(id))
@@ -170,7 +280,7 @@ def stat_record(request, id):
     if request.method == 'POST':
         
         form = TossForm(request.POST, players=players)
-        print(form.errors)
+        # print(form.errors)
         if form.is_valid():
             toss = NToss()
             
@@ -194,7 +304,7 @@ def stat_record(request, id):
             toss.hit = int(form.cleaned_data['hit'])
             toss.dropped = int(form.cleaned_data['dropped'])
             if form.cleaned_data['plink'] is not None:
-                print(form.cleaned_data['plink'])
+                # print(form.cleaned_data['plink'])
                 toss.plink = int(form.cleaned_data['plink'])
             else:
                 toss.plink = 0
@@ -220,6 +330,10 @@ def stat_record(request, id):
     return render(request, 'stats.html', {'form': form, 'header': 'Recording Stats', 'last_plays': last_plays, 'game': game, 'scores': scores, 'players': players, 'bigs': bigs, 'team_1': teams[0], 'team_2': teams[1]})
   
 def stat_delete(request, id):
+    
+    if not request.session.has_key('username') or get_user_priv(request.session['username']) < 1:
+        return redirect('/games/' + str(id))
+    
     game = NGame.get({'id': id})
     last_plays = sorted(NToss.filter({"game_id": id}), key=lambda x: (x.datetime is None, x.datetime), reverse=False)[:1]
    
@@ -233,20 +347,26 @@ def stat_delete(request, id):
     
 def team_add(request, id):
     
+    if not request.session.has_key('username') or get_user_priv(request.session['username']) < 1:
+        return redirect('/league/' + str(id))
+    
     players = get_options(NPlayer.all())
     
     if request.method == 'POST':
         form = LeagueTeamForm(request.POST, players=players)
         
-        
         if form.is_valid():
             team = NLeagueTeam()
             team.name = form.cleaned_data['name']
+            # print(form.cleaned_data['players'])
+            
             team.part_of_league = id
             
             team.save()
+            
+            for pid in form.cleaned_data['players']:
+                PlaysFor.insert(int(pid), team.id)
         
-
     
     form = LeagueTeamForm(players=players)
     return render(request, 'form.html', {'form': form})
@@ -272,6 +392,9 @@ def league_detail(request, id):
     return render(request, 'league.html', {'league': league, 'teams': teams, 'weeks': range(1, league.num_weeks+1), 'games': games, 'team_stats': team_stats})
 
 def league_add(request):
+    
+    if not request.session.has_key('username') or get_user_priv(request.session['username']) < 2:
+        return redirect('/leagues/')
     if request.method == 'POST':
         form = LeagueForm(request.POST)
         if form.is_valid():
@@ -286,6 +409,9 @@ def league_add(request):
     return render(request, 'form.html', {'form': form, 'header': 'Create New League'})
         
 def league_delete(request, id):
+    
+    if not request.session.has_key('username') or get_user_priv(request.session['username']) < 2:
+        return redirect('/leagues/')
     league = NLeague.get({'id': id})
     league.delete()
     
@@ -293,6 +419,9 @@ def league_delete(request, id):
         
 def league_game_add(request, id):
     
+    if not request.session.has_key('username') or get_user_priv(request.session['username']) < 2:
+        return redirect('/league/' + str(id))
+        
     league = NLeague.get({'id': id})
     
     
@@ -311,7 +440,7 @@ def league_game_add(request, id):
         teams.append(team)
 
     players = get_options(NPlayer.all())
-    
+
     if request.method == 'POST':
         form = LeagueGameForm(request.POST, league=league, league_teams=get_options(league_teams), players=players)
         if form.is_valid():
@@ -330,7 +459,7 @@ def league_game_add(request, id):
             TeamPlayedIn.insert(game.id, form.cleaned_data['team_1'])
             TeamPlayedIn.insert(game.id, form.cleaned_data['team_2'])
             
-            print(form.cleaned_data)
+            # print(form.cleaned_data)
             
             rebuild_player_stats(1,game)
             
@@ -340,6 +469,10 @@ def league_game_add(request, id):
     return render(request, 'addgame.html', {'form': form, 'header': 'Create New League Game', 'teams': teams})
     
 def update_game(request, id):
+    
+    if not request.session.has_key('username') or get_user_priv(request.session['username']) < 1:
+        return redirect('/games/' + str(id))
+    
     game = NGame.get({'id': id})
     
     if game.locked:
@@ -517,10 +650,10 @@ def update_game_state(id, t):
             stats = rebuild_player_stats(bigpoint, game)
             
         if t.dropped:
-            print(player, stats[player].stat_for_player)
+            # print(player, stats[player].stat_for_player)
             stats[player].points += 1
             stats[player].save()
-            print("points", stats[player].points)
+            # print("points", stats[player].points)
         if t.plink:
             stats[player].plinks += t.plink
             stats[player].points += t.plink
@@ -539,7 +672,7 @@ def update_game_state(id, t):
         stats[kick_player].kicks += 1
         stats[kick_player].save()
         
-    print("point", stats[player].points)
+    # print("point", stats[player].points)
     scores = game.state
     
     bigs = game.big_score
@@ -616,4 +749,49 @@ def get_league_stats(league):
     
     
                 
+def profile(request):
+
+    if request.method == "POST":
+        form = AdminUpdateForm(request.POST)
+        if form.is_valid():
+            admin = NAdmin()
+            admin.username = request.session['username']
+            
+            admin.hash = form.cleaned_data['new_password']
+            admin.privilege = get_user_priv(request.session['username'])
+            admin.updateA()
         
+        return redirect('/profile')
+    
+    form = AdminUpdateForm()
+    
+    return render(request, 'profile.html', {'form': form, 'username': request.session['username'], 'privilege': get_user_priv(request.session['username'])} )
+    
+    
+def privileges(request):
+    priv_num = get_user_priv(request.session['username'])
+    admins = NAdmin.allAdmin()
+    y = []
+    privs = [(-1, "Unassigned"), (0, "Stat Recorder"), (1, "Tournament Admin"), (2, "Developer")]
+    for x in admins:
+        y.append( (x[0], x[0]) )
+    own_change = False
+    change_succ = False
+    if request.method == "POST":
+        form = ChangePrivilege(request.POST, username=y, privilege=privs)
+        if form.is_valid():
+            # can't change own role if dev
+            if form.cleaned_data['username'] == request.session['username']:
+                own_change = True
+            else:
+                admin = NAdmin()
+                admin.username = form.cleaned_data['username']
+                admin.privilege = form.cleaned_data['privilege']
+                admin.updateAPriv()
+                change_succ = True
+    
+    if str(priv_num) == "2": # developer -- grant access to change form
+        form = ChangePrivilege(username=y, privilege=privs)
+        return render(request, 'privilege.html', {'priv_num': priv_num, 'form': form, 'own_change': own_change, 'change_succ': change_succ})
+    else:
+        return render(request, 'privilege.html', {'priv_num': priv_num})

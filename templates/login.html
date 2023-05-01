@@ -8,5 +8,15 @@
   {% csrf_token %}
   {{ form.as_p }}
   <button type="submit">Log In</button>
+
 </form>
+<br>
+  <a href="/create">
+      <button>Create Account</button>
+  </a>
+  <br>
+  {% if login_fail %}
+    <i style="color: red">Incorrect username/password</i>
+  {% endif %}
+
 {% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
+<br>
+
+<h2>Privileges</h2>
+
+<b>Role: </b>
+
+{% if priv_num == 2 %}
+    Developer
+{% elif priv_num == 1 %}
+    Tournament Admin
+{% elif priv_num == 0 %}
+    Stat Recorder
+{% else %}
+    Unassigned
+{% endif %}
+
+<br>
+
+<b>Accessible Tables: </b>
+{% if priv_num == 2 %}
+    All
+{% elif priv_num == 1 %}
+    Game, Toss, Players
+{% elif priv_num == 0 %}
+    Game, Toss
+{% else %}
+    None
+{% endif %}
+
+
+<br>
+<br>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Change Privilege</button>
+</form>
+
+{% if own_change == True %}
+    <i style="color: red">Cannot change own privileges</i>
+{% endif %}
+
+{% if change_succ == True %}
+    <i style="color: green">Change Successful</i>
+{% endif %}
+
+
+{% endblock %}

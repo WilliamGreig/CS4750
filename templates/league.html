@@ -4,6 +4,12 @@
 
 {% block content %}
 
+<br>
+
+<a href="/leagues/">
+ <button type="button" style="background-color: #7332a8" class="btn btn-primary">Back to Leagues</button>
+</a>
+
 <h1>{{ league.name }}</h1>
 <h2>{{ league.year }}</h2>
 
@@ -11,9 +17,12 @@
  
 <div class="col-md-4">
 <h3>Weeks</h3>
+
+{% if request.session.username %}
 <a href="/leagues/{{ league.id }}/games/add">
  <button type="button" style="background-color: #7332a8" class="btn btn-primary">Add Game</button>
 </a>
+{% endif %}
 <div class='list-group'>
  {% for i in weeks %}
    <a href="#week{{ i }}" data-bs-toggle="collapse" class='list-group-item list-group-item-dark'>Week {{ i }}</a>
@@ -31,10 +40,12 @@
  
  <h3>Teams</h3>
 
+
+{% if request.session.username %}
 <a href="/leagues/{{ league.id }}/teams/add">
  <button type="button" style="background-color: #7332a8" class="btn btn-primary">Add Team</button>
 </a>
-
+{% endif %}
 
 {% include 'playerstats.html' with stats=team_stats %}
 

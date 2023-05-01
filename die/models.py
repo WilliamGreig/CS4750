@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
+from datetime import datetime
 
 import die.db
 
@@ -92,15 +93,16 @@ class NGame(die.db.Model):
     
     @property
     def in_the_past(self):
+        print(datetime.now(), self.datetime)
         if self.datetime == None:
             return False
-        return timezone.now() > self.datetime
+        return datetime.now() > self.datetime
         
     @property
     def today(self):
         if self.datetime == None:
             return False
-        return timezone.now().date() == self.datetime.date()
+        return datetime.now().date() == self.datetime.date()
         
     @property
     def state(self):
@@ -109,7 +111,6 @@ class NGame(die.db.Model):
         bigpoint = 1
         stats = self.get_player_stats(bigpoint)
         while len(stats):
-            print(1)
             score = [stats[0].points + stats[1].points - stats[0].negative_points
                     - stats[1].negative_points - stats[2].kicks - stats[3].kicks,
                     stats[2].points + stats[3].points - stats[2].negative_points
@@ -282,6 +283,9 @@ class NLeague(die.db.Model):
 
 class Stat(object):
     pass
+
+
+
     
 def sum_stats(stats):
     

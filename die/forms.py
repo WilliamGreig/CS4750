@@ -2,6 +2,42 @@ from django import forms
 from die.models import *
 from datetime import datetime
 
+class AdminForm(forms.Form):
+    username = forms.CharField(max_length=30)
+    password = forms.CharField(max_length=30)
+
+class AdminUpdateForm(forms.Form):
+    new_password = forms.CharField(max_length=30)
+
+class ChangePrivilege(forms.Form):
+    username = forms.ChoiceField(required=True)
+    privilege = forms.ChoiceField(required=True)
+    
+    def __init__(self, *args, **kwargs):
+        
+        self.username = kwargs.pop('username', None)
+        self.privilege = kwargs.pop('privilege', None)
+        
+
+        super().__init__(*args, **kwargs)    
+
+        self.fields['username'].choices = self.username
+        self.fields['privilege'].choices = self.privilege
+
+class GameFilter(forms.Form):
+    teams = forms.MultipleChoiceField(required=False)
+    players = forms.MultipleChoiceField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        
+        self.players = kwargs.pop('players', None)
+        self.teams = kwargs.pop('teams', None)
+        
+        super().__init__(*args, **kwargs)    
+        
+        
+        self.fields['players'].choices = self.players
+        self.fields['teams'].choices = self.teams
 
 class PlayerForm(forms.Form):
     

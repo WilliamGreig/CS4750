@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
+<br>
+<a href="/login/">
+ <button type="button" style="background-color: #7332a8" class="btn btn-primary">Back to Login</button>
+</a>
+
+<h2>Create Account</h2>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Create Account</button>
+</form>
+
+{% if exists == True %}
+    <i style="color: red">User already exists...</i>
+{% endif %}
+
+
+{% endblock %}

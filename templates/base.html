@@ -44,7 +44,8 @@
   {% load static %}
   <link href="{% static 'die/style.css' %}" rel="stylesheet" />
 
-
+  <script type="text/javascript" src="Scripts/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="Scripts/bootstrap.min.js"></script>
 
 </head>
 <body>
@@ -71,10 +72,38 @@
         <li class="nav-item hover-underline-animation">
           <a class="nav-link" href="/players">Players</a>
         </li>
+        
       </ul>
     </div>
+    {% if not request.session.username %}
+    <span class="navbar-text">
+      <ul class="navbar-nav mr-auto"  style="font-size: 24px">
+        <li class="nav-item hover-underline-animation">
+          <a class="nav-link" href="/login">Login</a>
+        </li>
+      </ul>
+    </span>
+    {% else %}
+    <span>
+      <ul class="navbar-nav" style="font-size: 24px">
+            <li class="nav-item dropdown navbar-text">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Howdy {{ request.session.username }}!
+        </a>
+        <div class="dropdown-menu" style="font-size: 36px, color: #7332a8" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" style="color: #7332a8; font-size: 26px" href="/profile/">Profile</a>
+          <a class="dropdown-item" style="color: #7332a8; font-size: 26px" href="/privileges/">Privileges</a>
+          <a class="dropdown-item" style="color: #7332a8; font-size: 26px" href="/logout/">Logout</a>
+        </div>
+      </li>
+        
+      </ul>
+      
+    </span>
+      
     
-    
+    {% endif %}
+
   </nav>
   
   

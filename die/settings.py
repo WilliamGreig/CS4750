@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'die'
+    'die',
 ]
 
 MIDDLEWARE = [
@@ -90,6 +90,7 @@ MYSQL_DATABASE_USER = 'beerdie'
 MYSQL_DATABASE_PASSWORD = 'freebeerisfree'
 MYSQL_DATABASE_NAME = 'die'
 
+SESSION_ENGINE = 'django.contrib.sessions.backends.file'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

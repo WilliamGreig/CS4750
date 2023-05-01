@@ -4,8 +4,42 @@
 
 {% block content %}
 
+
 <h1>Games</h1>
 
+
+<b> Player Filters: </b> 
+  {% if player_filters %}
+  {% for player in player_filters %}
+    <i style="color: red">{{ player }}</i>, 
+  {% endfor %}
+  {% else %}
+    <i style="color: red">None</i>
+  {% endif %}
+<br>
+
+<b> Team Filters: </b>
+  {% if team_filters %}
+  {% for team in team_filters %}
+    <i style="color: red">{{ team }}</i>, 
+  {% endfor %}
+  {% else %}
+    <i style="color: red">None</i>
+  {% endif %}
+<br>
+<br>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <span>
+        <button type="submit">Filter</button>
+  </span>
+</form>
+
+<br>
+<a href='/games'>
+  <button> Clear </button>
+</a>
 
 {% include 'gamelist.html' with week=-1 %}
 

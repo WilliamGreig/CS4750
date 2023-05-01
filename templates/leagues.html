@@ -6,6 +6,12 @@
 
 <h1>Leagues</h1>
 
+{% if request.session.username %}
+<a href="/leagues/add">
+ <button type="button" style="background-color: #7332a8" class="btn btn-primary">Add League</button>
+</a>
+{% endif %}
+
 <ul>
  {% for league in leagues %}
   <li><a href ="{% url 'leagues' %}{{ league.id }}/">{{ league.name }}</a></li>
